@@ -105,7 +105,7 @@ class Bomb:
         """
         爆弾円Surfaceを生成する
         """
-        rad = random.randint(10, 100)
+        rad = random.randint(10, 20)
         self.img = pg.Surface((2*rad, 2*rad))
         color = random.choice(__class__.colors)
         pg.draw.circle(self.img, color, (rad, rad), rad)
@@ -144,6 +144,19 @@ class Beam:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+class Score:
+    def __init__(self):
+        self.font = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        self.color = (0, 0, 255)
+        self.score = 0
+        self.center = (100, HEIGHT - 50)
+        self.img = self.font.render(f"スコア：{self.score}", 0, self.color)
+        self.rct = self.img.get_rect()
+
+    def update(self, screen: pg.Surface):
+        self.img = self.font.render(f"スコア：{self.score}", 0, self.color)
+        screen.blit(self.img, self.center)
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -152,6 +165,7 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam = None
+    score = Score()
 
     clock = pg.time.Clock()
     tmr = 0
@@ -177,6 +191,8 @@ def main():
                 beam = None
                 bombs[i] = None
                 bird.change_img(6, screen)
+                score.score += 1
+
         bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
@@ -185,6 +201,7 @@ def main():
             bomb.update(screen)
         if beam is not None:
             beam.update(screen)
+        score.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
